@@ -1,0 +1,18 @@
+Program Sum;
+var
+ a, b: integer;
+ c: float;
+begin
+ c:=6.66;
+ a:=5 + 10;
+ b:=6*7/10 - 15 % 13;
+ i:=(a + b) % 2;
+ if (i=0) then
+ begin
+    print ("Even");
+ end;
+ else
+ begin
+    print ("Odd");
+ end;
+end.
