@@ -11,6 +11,7 @@ namespace FGIMT
         public CToken curToken;
         public CToken nextToken;
         public int countBracket = 0;
+        StreamWriter listing = new StreamWriter("listing.txt");
 
         // блок Program
         public void blockProgram()
@@ -20,18 +21,18 @@ namespace FGIMT
             // проверка Program
             curToken = lexerObj.getNextToken();
             if (curToken.info() != keyWords.kwProgram.ToString())
-                throw new Exception("Нет объявления ключевого слова 'Program' ");
+                listing.WriteLine("Нет объявления ключевого слова 'Program' ");
 
             // проверка <название программы>
             curToken = lexerObj.getNextToken();
             if (curToken.TokenType != tokenType.ttId)
-                throw new Exception("Неверное объявление идентификатора");
+                listing.WriteLine("Неверное объявление идентификатора");
 
 
             // проверка <точка с запятой>
             curToken = lexerObj.getNextToken();
             if (curToken.info() != operators.oDotAndComma.ToString())
-                throw new Exception("Нет объявления оператора ';' ");
+                listing.WriteLine("Нет объявления оператора ';' ");
         }
 
         // блок var
@@ -43,12 +44,12 @@ namespace FGIMT
             // проверяем идентификатор типа
             curToken = lexerObj.getNextToken();
             if (curToken.TokenType != tokenType.ttId)
-                throw new Exception("Неверное объявление типа");
+                listing.WriteLine("Неверное объявление типа");
 
             // проверка на двоеточие
             curToken = lexerObj.getNextToken();
             if (curToken.info() != operators.oDotAndComma.ToString())  // проверка на точку с запятой
-                throw new Exception("Нет объявления оператора ';' ");
+                listing.WriteLine("Нет объявления оператора ';' ");
 
             // проверка следующего токена (либо очередное объявление переменных, либо начало основного кода begin)
             nextToken = lexerObj.getNextToken();
@@ -77,7 +78,7 @@ namespace FGIMT
                 curToken = lexerObj.getNextToken();
 
             if (curToken.TokenType != tokenType.ttId)
-                throw new Exception("Неверное объявление идентификатора");
+                listing.WriteLine("Неверное объявление идентификатора");
 
             curToken = lexerObj.getNextToken();
             if (curToken.info() == operators.oComma.ToString())
@@ -93,7 +94,7 @@ namespace FGIMT
             else
             {
                 // после перечисления переменных нет ;
-                throw new Exception("Нет объявления оператора ';' ");
+                listing.WriteLine("Нет объявления оператора ';' ");
             }
 
         }
@@ -106,7 +107,7 @@ namespace FGIMT
             // проверка var
             curToken = lexerObj.getNextToken();
             if (curToken.info() != keyWords.kwVar.ToString())
-                throw new Exception("Нет объявления ключевого слова 'var' ");
+                listing.WriteLine("Нет объявления ключевого слова 'var' ");
 
             blockVarMain();
         }
@@ -124,12 +125,12 @@ namespace FGIMT
 
                 blockMainCodeOperatorExpressionAdd();
                 if (curToken.info() != operators.oBracketOut.ToString())
-                    throw new Exception("Нет объявления оператора ')' ");
+                    listing.WriteLine("Нет объявления оператора ')' ");
                 else // вычитаем скобку
                     countBracket--;
             }
             else if (curToken.TokenType != tokenType.ttId && curToken.TokenType != tokenType.ttConst)
-                throw new Exception("Нет объявления операнда выражения ");
+                listing.WriteLine("Нет объявления операнда выражения ");
 
             // проверка операции
             curToken = lexerObj.getNextToken();
@@ -156,14 +157,14 @@ namespace FGIMT
                 if (countBracket == 0)
                     return;
                 else
-                    throw new Exception("В строке не соблюдено соответствие скобок '(' ')' ");
+                    listing.WriteLine("В строке не соблюдено соответствие скобок '(' ')' ");
             }
             else if (curToken.info() == operators.oEqual.ToString() || curToken.info() == operators.oNotEqual.ToString() ||
                      curToken.info() == operators.oLess.ToString() || curToken.info() == operators.oLessOrEqual.ToString() ||
                      curToken.info() == operators.oMore.ToString() || curToken.info() == operators.oMoreOrEqual.ToString())
                 return;
             else
-                throw new Exception("Нет объявления оператора '+' или '-' ");
+                listing.WriteLine("Нет объявления оператора '+' или '-' ");
         }
 
 
@@ -173,7 +174,7 @@ namespace FGIMT
             nextToken = null;
             curToken = lexerObj.getNextToken();
             if (curToken.info() != operators.oAssign.ToString())  // проверка на присваивание
-                throw new Exception("Нет объявления оператора ':=' ");
+                listing.WriteLine("Нет объявления оператора ':=' ");
             else
                 blockMainCodeOperatorExpressionAdd(); // <выражение>
         }
@@ -185,7 +186,7 @@ namespace FGIMT
             // проверка открывающей скобки
             curToken = lexerObj.getNextToken();
             if (curToken.info() != operators.oBracketIn.ToString())
-                throw new Exception("Нет объявления оператора '(' ");
+                listing.WriteLine("Нет объявления оператора '(' ");
 
             // проверка левого выражения
             blockMainCodeOperatorExpressionAdd();
@@ -207,7 +208,7 @@ namespace FGIMT
             // проверка then
             curToken = lexerObj.getNextToken();
             if (curToken.info() != keyWords.kwThen.ToString())
-                throw new Exception("Нет объявления ключевого слова 'then' ");
+                listing.WriteLine("Нет объявления ключевого слова 'then' ");
 
             nextToken = lexerObj.getNextToken();
 
@@ -268,7 +269,7 @@ namespace FGIMT
             }
             else
             {
-                throw new Exception("Нет объявления ключевого слова 'begin' ");
+                listing.WriteLine("Нет объявления ключевого слова 'begin' ");
             }
 
             // <оператор>
@@ -286,7 +287,7 @@ namespace FGIMT
                     return;
 
                 if (curToken.info() != operators.oDotAndComma.ToString())
-                    throw new Exception("Нет объявления оператора ';' ");
+                    listing.WriteLine("Нет объявления оператора ';' ");
 
 
             }
@@ -303,6 +304,7 @@ namespace FGIMT
             // block of main code (begin .. end.)
             blockMainCode();
 
+            listing.Close();
         }
     }
 }
